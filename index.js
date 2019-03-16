@@ -18,24 +18,34 @@ server.post('/api/zoos', async (req, res) => {
   } else {
     const newZoo = req.body;
     const postedZoo = await db('zoos').insert(newZoo);
-    console.log(postedZoo);
     res.status(201).json({id: Number(postedZoo)})
   }
   } catch (err) {
     res.status(500).json({err: "There was a problem adding the record"})
   } 
-
 })
 
 server.get('/api/zoos', async (req, res) => {
   try {
     const getZoos = await db.select().from('zoos');
-    console.log(getZoos);
     res.status(200).json(getZoos);
   } catch (err) {
-    console.log(err);
     res.status(500).json({error: "There was problem processing your request",
   err})
+  }
+})
+
+server.get('/api/zoos/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const getZoo = await db('zoos').where({id: id}).first();
+    if (getZoo) {
+    res.status(200).json(getZoo);
+    } else {
+      res.status(404).json({error: "There is no record by that id"})
+    }
+  } catch {
+    res.status(500).json({error: "There was a problem processing your request"})
   }
 })
 
