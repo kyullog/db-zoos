@@ -4,6 +4,7 @@ const bearRouter = express.Router();
 
 const db = require("../data/dbConfig");
 
+// get all bears from bears table
 bearRouter.get("/", async (req, res) => {
   try {
     const bears = await db.select().from("bears");
@@ -15,13 +16,13 @@ bearRouter.get("/", async (req, res) => {
   }
 });
 
+//get bear by id from bears table
 bearRouter.get("/:id", async (req, res) => {
   const id = req.params.id;
   try {
     const bear = await db("bears")
       .where({ id: id })
       .first();
-    console.log(bear);
     res.status(200).json(bear);
   } catch (err) {
     res
@@ -30,28 +31,32 @@ bearRouter.get("/:id", async (req, res) => {
   }
 });
 
+//add bear to bears table
 bearRouter.post("/", async (req, res) => {
   try {
     const newBear = req.body;
-    const validZoo = await db('zoos').select().where({ id: newBear.zooID });
-    console.log(validZoo);
+
+    //check and see if zoo exists
+    const validZoo = await db("zoos")
+      .select()
+      .where({ id: newBear.zooID });
     if (!validZoo.length) {
+      //if zoo does not exist, responds with error
       res.status(400).json({ error: "Please include a valid zoo id" });
-    }
-    else if (!newBear.name || !newBear.zooID) {
+    } else if (!newBear.name || !newBear.zooID) {
+      // if required fields aren't filled, responds with error
       res
         .status(400)
         .json({ error: "Please include a name and zooID for the bear" });
-    }  else {
+    } else {
+      //if requirements are met, attempts to post new bear in bears table
       const success = await db("bears").insert({
         name: newBear.name,
         zooID: newBear.zooID
       });
-      console.log(success);
-      res.status(201).json({id: success.join('')});
+      res.status(201).json({ id: success.join("") });
     }
   } catch (err) {
-    console.log(err);
     res
       .status(500)
       .json({ error: "There was a problem processing your request" });
