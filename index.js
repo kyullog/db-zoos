@@ -1,8 +1,8 @@
-const express = require('express');
-const helmet = require('helmet');
-const knex = require('knex');
+const express = require("express");
+const helmet = require("helmet");
+const knex = require("knex");
 
-const { development } = require('./data/knexfile')
+const { development } = require("./data/knexfile");
 const db = knex(development);
 
 const server = express();
@@ -12,61 +12,91 @@ server.use(helmet());
 
 // endpoints here
 // add new zoo record endpoint
-server.post('/api/zoos', async (req, res) => {
+server.post("/api/zoos", async (req, res) => {
   try {
-  if (!req.body.name) {
-    res.status(400).json({message: "Please provide a name"})
-  } else {
-    const newZoo = req.body;
-    const postedZoo = await db('zoos').insert(newZoo);
-    res.status(201).json({id: Number(postedZoo)})
-  }
+    if (!req.body.name) {
+      res.status(400).json({ message: "Please provide a name" });
+    } else {
+      const newZoo = req.body;
+      const postedZoo = await db("zoos").insert(newZoo);
+      res.status(201).json({ id: Number(postedZoo) });
+    }
   } catch (err) {
-    res.status(500).json({err: "There was a problem adding the record"})
-  } 
-})
+    res.status(500).json({ err: "There was a problem adding the record" });
+  }
+});
 
 // get all zoos endpoint
-server.get('/api/zoos', async (req, res) => {
+server.get("/api/zoos", async (req, res) => {
   try {
-    const getZoos = await db.select().from('zoos');
+    const getZoos = await db.select().from("zoos");
     res.status(200).json(getZoos);
   } catch (err) {
-    res.status(500).json({error: "There was problem processing your request",
-  err})
+    res
+      .status(500)
+      .json({ error: "There was problem processing your request", err });
   }
-})
+});
 
 // get zoo by id endpoint
-server.get('/api/zoos/:id', async (req, res) => {
+server.get("/api/zoos/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const getZoo = await db('zoos').where({id: id}).first();
+    const getZoo = await db("zoos")
+      .where({ id: id })
+      .first();
     if (getZoo) {
-    res.status(200).json(getZoo);
+      res.status(200).json(getZoo);
     } else {
-      res.status(404).json({error: "There is no record by that id"})
+      res.status(404).json({ error: "There is no record by that id" });
     }
   } catch {
-    res.status(500).json({error: "There was a problem processing your request"})
+    res
+      .status(500)
+      .json({ error: "There was a problem processing your request" });
   }
-})
+});
 
 //delete zoo record by id
-server.delete('/api/zoos/:id', async (req, res) => {
+server.delete("/api/zoos/:id", async (req, res) => {
   const id = req.params.id;
   try {
-    const deleted = await db('zoos').where({id: id}).del();
+    const deleted = await db("zoos")
+      .where({ id: id })
+      .del();
     console.log(deleted);
     if (deleted) {
-    res.status(200).json({message: "Record deleted"})
+      res.status(200).json({ message: "Record deleted" });
     } else {
-      res.status(400).json({error: "No record with that id to be deleted"})
+      res.status(400).json({ error: "No record with that id to be deleted" });
     }
   } catch {
-    res.status(500).json({error: "There was a problem processing your request"})
+    res
+      .status(500)
+      .json({ error: "There was a problem processing your request" });
   }
-})
+});
+
+//update record by id
+server.put("/api/zoos/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const newName = req.body.name;
+    const updated = await db("zoos")
+      .where({ id: id })
+      .update({ name: newName });
+    console.log(updated);
+    if (updated) {
+      res.status(201).json({ message: "Record was updated" });
+    } else {
+      res.status(400).json({ error: "There was problem editing the record" });
+    }
+  } catch {
+    res
+      .status(500)
+      .json({ error: "There was a problem processing your request" });
+  }
+});
 
 const port = 3300;
 server.listen(port, function() {
