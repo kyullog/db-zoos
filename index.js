@@ -11,6 +11,7 @@ server.use(express.json());
 server.use(helmet());
 
 // endpoints here
+// add new zoo record endpoint
 server.post('/api/zoos', async (req, res) => {
   try {
   if (!req.body.name) {
@@ -25,6 +26,7 @@ server.post('/api/zoos', async (req, res) => {
   } 
 })
 
+// get all zoos endpoint
 server.get('/api/zoos', async (req, res) => {
   try {
     const getZoos = await db.select().from('zoos');
@@ -35,6 +37,7 @@ server.get('/api/zoos', async (req, res) => {
   }
 })
 
+// get zoo by id endpoint
 server.get('/api/zoos/:id', async (req, res) => {
   const id = req.params.id;
   try {
@@ -49,6 +52,7 @@ server.get('/api/zoos/:id', async (req, res) => {
   }
 })
 
+//delete zoo record by id
 server.delete('/api/zoos/:id', async (req, res) => {
   const id = req.params.id;
   try {
