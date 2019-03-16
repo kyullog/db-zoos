@@ -14,7 +14,7 @@ zooRouter.post("/", async (req, res) => {
       res.status(201).json({ id: Number(postedZoo) });
     }
   } catch (err) {
-    res.status(500).json({ err: "There was a problem adding the record" });
+    res.status(500).json({ error: "There was a problem adding the record" });
   }
 });
 
