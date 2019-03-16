@@ -11,6 +11,22 @@ server.use(express.json());
 server.use(helmet());
 
 // endpoints here
+server.post('/api/zoos', async (req, res) => {
+  try {
+  if (!req.body.name) {
+    res.status(400).json({message: "Please provide a name"})
+  } else {
+    const newZoo = req.body;
+    const postedZoo = await db('zoos').insert(newZoo);
+    console.log(postedZoo);
+    res.status(201).json({id: Number(postedZoo)})
+  }
+  } catch (err) {
+    res.status(500).json({err: "There was a problem adding the record"})
+  } 
+
+})
+
 server.get('/api/zoos', async (req, res) => {
   try {
     const getZoos = await db.select().from('zoos');
