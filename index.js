@@ -1,4 +1,4 @@
-const server = require('./server.js')
+const server = require("./server.js");
 
 // endpoints here
 // add new zoo record endpoint
