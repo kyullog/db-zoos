@@ -1,12 +1,7 @@
-const express = require('express');
-const helmet = require('helmet');
-
-const server = express();
-
-server.use(express.json());
-server.use(helmet());
+const server = require("./server.js");
 
 // endpoints here
+// add new zoo record endpoint
 
 const port = 3300;
 server.listen(port, function() {
